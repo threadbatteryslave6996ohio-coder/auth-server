@@ -41,7 +41,7 @@ To build a runnable jar instead:
 ```bash
 cd ~/Desktop/clippy
 mvn -pl auth/server -am package
-java -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT.jar
+java -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT-exec.jar
 ```
 
 ## Configuration
@@ -78,7 +78,7 @@ The auth server configures the custom logger to use the same directory as `AUTH_
 If you run the `CustomLogger` directly elsewhere, you can still redirect it with the JVM system property `custom.logger.dir`, for example:
 
 ```bash
-java -Dcustom.logger.dir=/tmp/clippy-logs -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT.jar
+java -Dcustom.logger.dir=/tmp/clippy-logs -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT-exec.jar
 ```
 
 Raw secrets and raw bearer tokens are not written to the custom log file.

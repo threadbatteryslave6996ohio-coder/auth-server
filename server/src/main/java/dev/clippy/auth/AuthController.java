@@ -6,6 +6,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 
 @RestController
+@RequestMapping("${clippy.auth.route-prefix:}")
 public class AuthController {
     private static final CustomLogger LOGGER = new CustomLogger("auth-server");
 
@@ -78,7 +80,7 @@ public class AuthController {
     public CheckTokenResponse checkToken(@Valid @RequestBody CheckTokenRequest request) {
         LOGGER.log("Token check request received for clientId=" + request.clientId());
 
-        boolean valid = tokens.findByTokenHash(credentialHasher.hashToken(request.token()))
+        boolean valid = tokens.findWithIdentityByTokenHash(credentialHasher.hashToken(request.token()))
                 .map(ClientToken::getIdentity)
                 .filter(ClientIdentity::isActive)
                 .map(ClientIdentity::getClientId)
