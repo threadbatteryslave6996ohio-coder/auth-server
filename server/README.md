@@ -223,6 +223,12 @@ Run this auth server before starting the main app server. The app server default
 CLIPPY_AUTH_BASE_URL=http://localhost:8081
 ```
 
+If you are building a separate module that depends on the generated auth client directly, install that client locally first:
+
+```bash
+mvn -pl auth/client install
+```
+
 Clipboard clients send the token from `/login` to the app server as a bearer token:
 
 ```http
