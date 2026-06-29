@@ -1,13 +1,10 @@
 package dev.clippy.auth;
 
 import dev.clippy.utils.envmanager.Env;
-import dev.clippy.utils.envmanager.EnvFiles;
 import dev.clippy.utils.envmanager.EnvOption;
 import dev.clippy.utils.envmanager.EnvSchema;
 import dev.clippy.utils.envmanager.EnvType;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,18 +27,6 @@ public final class AuthServerEnvs {
     }
 
     private AuthServerEnvs() {
-    }
-
-    public static Env fromSystem() {
-        return ENV.fromSystem();
-    }
-
-    public static Env load() throws IOException {
-        return from(EnvFiles.loadDotenvOnly(Path.of("").toAbsolutePath()));
-    }
-
-    static Env loadFrom(Path startDirectory) throws IOException {
-        return from(EnvFiles.loadDotenvOnly(startDirectory));
     }
 
     public static Env from(Map<String, String> source) {

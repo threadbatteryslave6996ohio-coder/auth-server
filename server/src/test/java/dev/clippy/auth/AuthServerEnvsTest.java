@@ -26,7 +26,7 @@ class AuthServerEnvsTest {
     }
 
     @Test
-    void loadsDotenvFromAncestralDirectory() throws IOException {
+    void launcherResolvesDotenvFromAncestralDirectory() throws IOException {
         Path nestedDirectory = Files.createDirectories(tempDir.resolve("nested/child"));
         Files.writeString(
                 tempDir.resolve(".env"),
@@ -37,7 +37,7 @@ class AuthServerEnvsTest {
                         "AUTH_LOGGING_FILE_NAME=/tmp/auth.log\n"
         );
 
-        Env env = AuthServerEnvs.loadFrom(nestedDirectory);
+        Env env = AuthServerEnvs.from(ClippyAuthServerLauncher.resolveEnvironment(nestedDirectory));
 
         assertEquals("jdbc:postgresql://example:5432/auth", env.get(AuthServerEnvs.AUTH_DATASOURCE_URL));
         assertEquals("example-user", env.get(AuthServerEnvs.AUTH_DATASOURCE_USERNAME));

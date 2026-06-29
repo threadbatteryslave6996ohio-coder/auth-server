@@ -82,6 +82,7 @@
                 <version>4.1.0</version>
                 <configuration>
                     <classifier>exec</classifier>
+                    <mainClass>dev.clippy.auth.ClippyAuthServerLauncher</mainClass>
                 </configuration>
                 <executions>
                     <execution>

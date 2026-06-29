@@ -4,19 +4,25 @@ import dev.clippy.utils.logger.CustomLogger;
 import dev.clippy.utils.envmanager.Env;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
-import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 @SpringBootApplication
 public class ClippyAuthServerApplication {
-    public static void main(String[] args) throws IOException {
-        Env env = AuthServerEnvs.load();
+    /**
+     * Boots the auth server from an already-resolved environment. The core never reads {@code .env}
+     * files or system env itself: whoever launches it (see {@link ClippyAuthServerLauncher}, the
+     * combined server, or tests) decides how to fetch the values and passes them in here.
+     */
+    public static ConfigurableApplicationContext start(Map<String, String> environment, String[] args) {
+        Env env = AuthServerEnvs.from(environment);
         configureCustomLoggerDirectory(env);
         logLocalDatabaseIfApplicable(env);
         SpringApplication application = new SpringApplication(ClippyAuthServerApplication.class);
         application.setDefaultProperties(AuthServerEnvs.springDefaults(env));
-        application.run(args);
+        return application.run(args);
     }
 
     private static void configureCustomLoggerDirectory(Env env) {
