@@ -34,7 +34,7 @@ Start the auth database on port `5433` using your preferred local PostgreSQL set
 mvn -pl auth/server spring-boot:run
 ```
 
-The auth server listens on `http://localhost:8081` by default. Its local PostgreSQL container exposes database `auth` on host port `5433`.
+The example configuration runs the auth server on `http://localhost:8081`. Its local PostgreSQL container exposes database `auth` on host port `5433`.
 
 To build a runnable jar instead:
 
@@ -46,20 +46,22 @@ java -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT-exec.jar
 
 ## Configuration
 
-The auth server loads configuration from a `.env` file if one is present in the current directory or any parent directory. The launcher converts the file values into Spring application defaults instead of exposing the env loader to the service classes.
+The launcher loads configuration from a `.env` file in the current directory or any parent directory, applies nonblank shell values as overrides, and passes the resolved map into the auth core. The core never fetches configuration itself.
 
-The default local configuration matches the local development settings.
+All values are required. These values provide a local configuration.
 
-| Environment variable | Default | Purpose |
+| Environment variable | Example | Purpose |
 | --- | --- | --- |
 | `AUTH_SERVER_PORT` | `8081` | HTTP port for the auth server. |
 | `AUTH_DATASOURCE_URL` | `jdbc:postgresql://localhost:5433/auth` | PostgreSQL JDBC URL. |
 | `AUTH_DATASOURCE_USERNAME` | `auth` | Database username. |
 | `AUTH_DATASOURCE_PASSWORD` | `auth` | Database password. |
 | `AUTH_LOGGING_FILE_NAME` | `logs/clippy-auth-server.log` | File path for server logs. |
+| `AUTH_JPA_HIBERNATE_DDL_AUTO` | `update` | Hibernate schema-management mode. |
+| `AUTH_JPA_JDBC_TIME_ZONE` | `UTC` | Hibernate JDBC timezone. |
 
-Explicit Spring configuration, including shell exports and command-line arguments
-such as `--server.port=9091`, takes precedence over the file-derived defaults.
+The core receives only the map resolved by the launcher; it does not read shell
+exports or Spring command-line configuration independently.
 
 ## Logging
 
@@ -76,7 +78,7 @@ The custom logger currently records:
 - each `/tokens/check` request
 - each token check result
 
-The auth server configures the custom logger to use the same directory as `AUTH_LOGGING_FILE_NAME`, so both auth log files land in the same folder by default. The custom logger file name is `auth-server.txt`.
+The auth server configures the custom logger to use the same directory as `AUTH_LOGGING_FILE_NAME`, so both auth log files land in the configured folder. The custom logger file name is `auth-server.txt`.
 
 If you run the `CustomLogger` directly elsewhere, you can still redirect it with the JVM system property `custom.logger.dir`, for example:
 
@@ -94,6 +96,8 @@ AUTH_DATASOURCE_USERNAME=auth
 AUTH_DATASOURCE_PASSWORD=auth
 AUTH_SERVER_PORT=8081
 AUTH_LOGGING_FILE_NAME=logs/clippy-auth-server.log
+AUTH_JPA_HIBERNATE_DDL_AUTO=update
+AUTH_JPA_JDBC_TIME_ZONE=UTC
 ```
 
 For Azure, point `AUTH_DATASOURCE_URL` at the `auth` database on the deployed PostgreSQL server.
@@ -220,7 +224,7 @@ curl -s http://localhost:8081/tokens/check \
 
 ## App Server Integration
 
-Run this auth server before starting the main app server. The app server defaults to this auth base URL:
+Run this auth server before starting the main app server. Configure the app server with this auth base URL:
 
 ```text
 CLIPPY_AUTH_BASE_URL=http://localhost:8081
