@@ -50,11 +50,11 @@ public final class AuthServerEnvs {
 
     public static Map<String, Object> springDefaults(Env env) {
         Map<String, Object> values = new HashMap<>();
-        values.put("AUTH_DATASOURCE_URL", env.get(AUTH_DATASOURCE_URL));
-        values.put("AUTH_DATASOURCE_USERNAME", env.get(AUTH_DATASOURCE_USERNAME));
-        values.put("AUTH_DATASOURCE_PASSWORD", env.get(AUTH_DATASOURCE_PASSWORD));
-        values.put("AUTH_SERVER_PORT", env.get(AUTH_SERVER_PORT));
-        values.put("AUTH_LOGGING_FILE_NAME", env.get(AUTH_LOGGING_FILE_NAME));
+        values.put("spring.datasource.url", env.get(AUTH_DATASOURCE_URL));
+        values.put("spring.datasource.username", env.get(AUTH_DATASOURCE_USERNAME));
+        values.put("spring.datasource.password", env.get(AUTH_DATASOURCE_PASSWORD));
+        values.put("server.port", env.get(AUTH_SERVER_PORT));
+        values.put("logging.file.name", env.get(AUTH_LOGGING_FILE_NAME));
         return values;
     }
 }

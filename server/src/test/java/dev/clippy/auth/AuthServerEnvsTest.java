@@ -45,4 +45,23 @@ class AuthServerEnvsTest {
         assertEquals("9090", env.get(AuthServerEnvs.AUTH_SERVER_PORT));
         assertEquals("/tmp/auth.log", env.get(AuthServerEnvs.AUTH_LOGGING_FILE_NAME));
     }
+
+    @Test
+    void exposesResolvedValuesAsSpringApplicationProperties() {
+        Env env = AuthServerEnvs.from(Map.of(
+                "AUTH_DATASOURCE_URL", "jdbc:postgresql://database/auth",
+                "AUTH_DATASOURCE_USERNAME", "user",
+                "AUTH_DATASOURCE_PASSWORD", "password",
+                "AUTH_SERVER_PORT", "9091",
+                "AUTH_LOGGING_FILE_NAME", "/tmp/auth.log"
+        ));
+
+        assertEquals(Map.of(
+                "spring.datasource.url", "jdbc:postgresql://database/auth",
+                "spring.datasource.username", "user",
+                "spring.datasource.password", "password",
+                "server.port", "9091",
+                "logging.file.name", "/tmp/auth.log"
+        ), AuthServerEnvs.springDefaults(env));
+    }
 }

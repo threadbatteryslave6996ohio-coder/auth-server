@@ -46,7 +46,7 @@ java -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT-exec.jar
 
 ## Configuration
 
-The auth server loads configuration from a `.env` file if one is present in the current directory or any parent directory. The shared env manager handles this loading, and shell exports are ignored for server startup.
+The auth server loads configuration from a `.env` file if one is present in the current directory or any parent directory. The launcher converts the file values into Spring application defaults instead of exposing the env loader to the service classes.
 
 The default local configuration matches the local development settings.
 
@@ -57,6 +57,9 @@ The default local configuration matches the local development settings.
 | `AUTH_DATASOURCE_USERNAME` | `auth` | Database username. |
 | `AUTH_DATASOURCE_PASSWORD` | `auth` | Database password. |
 | `AUTH_LOGGING_FILE_NAME` | `logs/clippy-auth-server.log` | File path for server logs. |
+
+Explicit Spring configuration, including shell exports and command-line arguments
+such as `--server.port=9091`, takes precedence over the file-derived defaults.
 
 ## Logging
 
