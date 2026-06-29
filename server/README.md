@@ -46,7 +46,7 @@ java -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT.jar
 
 ## Configuration
 
-The auth server loads configuration from a `.env` file if one is present in the current directory or any parent directory. The shared env manager handles this loading, and shell exports are ignored for server startup.
+The auth server loads configuration from a `.env` file if one is present in the current directory or any parent directory. The shared env manager also merges shell exports on top of `.env`, so exported values take precedence for server startup.
 
 The default local configuration matches the local development settings.
 
