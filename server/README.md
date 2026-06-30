@@ -14,17 +14,9 @@ The clipboard app server does not store client secrets or token records. It rece
 
 ## Requirements
 
-- JDK 25+ with `javac` available on `PATH`
-- Maven 3.9+
-- Docker and Docker Compose for local PostgreSQL
-
-Verify the Java install before running Maven:
-
-```bash
-java -version
-javac -version
-mvn -version
-```
+Use the JDK, Maven, and Docker versions listed in the
+[root README](../../README.md). Docker is required for local PostgreSQL and
+Testcontainers-based tests.
 
 ## Start Locally
 
@@ -46,7 +38,8 @@ java -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT-exec.jar
 
 ## Configuration
 
-The launcher loads configuration from a `.env` file in the current directory or any parent directory, applies nonblank shell values as overrides, and passes the resolved map into the auth core. The core never fetches configuration itself.
+The launcher loads `.env` from the current directory or a parent, applies
+nonblank shell values as overrides, and passes the result into the auth core.
 
 All values are required. These values provide a local configuration.
 
@@ -60,44 +53,17 @@ All values are required. These values provide a local configuration.
 | `AUTH_JPA_HIBERNATE_DDL_AUTO` | `update` | Hibernate schema-management mode. |
 | `AUTH_JPA_JDBC_TIME_ZONE` | `UTC` | Hibernate JDBC timezone. |
 
-The core receives only the map resolved by the launcher; it does not read shell
-exports or Spring command-line configuration independently.
-
 ## Logging
 
-The auth server uses two logging paths:
-
-- Spring Boot / Logback writes the normal application logs to the file configured by `AUTH_LOGGING_FILE_NAME` and `logging.file.name`.
-- The custom file logger writes a separate `auth-server.txt` file for startup and request-level audit messages.
-
-The custom logger currently records:
-
-- startup messages when the auth server detects a local database URL
-- each `/login` request
-- each successful token issuance
-- each `/tokens/check` request
-- each token check result
-
-The auth server configures the custom logger to use the same directory as `AUTH_LOGGING_FILE_NAME`, so both auth log files land in the configured folder. The custom logger file name is `auth-server.txt`.
+Spring Boot writes normal logs to `AUTH_LOGGING_FILE_NAME`. A separate
+`auth-server.txt` audit log in the same directory records startup, login, token
+issuance, and token-check events. Raw secrets and bearer tokens are never
+logged.
 
 If you run the `CustomLogger` directly elsewhere, you can still redirect it with the JVM system property `custom.logger.dir`, for example:
 
 ```bash
 java -Dcustom.logger.dir=/tmp/clippy-logs -jar auth/server/target/clippy-auth-server-0.1.0-SNAPSHOT-exec.jar
-```
-
-Raw secrets and raw bearer tokens are not written to the custom log file.
-
-Example `.env`:
-
-```dotenv
-AUTH_DATASOURCE_URL=jdbc:postgresql://localhost:5433/auth
-AUTH_DATASOURCE_USERNAME=auth
-AUTH_DATASOURCE_PASSWORD=auth
-AUTH_SERVER_PORT=8081
-AUTH_LOGGING_FILE_NAME=logs/clippy-auth-server.log
-AUTH_JPA_HIBERNATE_DDL_AUTO=update
-AUTH_JPA_JDBC_TIME_ZONE=UTC
 ```
 
 For Azure, point `AUTH_DATASOURCE_URL` at the `auth` database on the deployed PostgreSQL server.
