@@ -4,27 +4,29 @@ import dev.clippy.utils.logger.CustomLogger;
 import dev.clippy.utils.envmanager.Env;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.MapPropertySource;
 
-import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 
 @SpringBootApplication
 public class ClippyAuthServerApplication {
-    public static void main(String[] args) throws IOException {
-        Env env = AuthServerEnvs.load();
-        applySpringSystemProperties(env);
+    /**
+     * Boots the auth server from an already-resolved environment. The core never reads {@code .env}
+     * files or system env itself: whoever launches it (see {@link ClippyAuthServerLauncher}, the
+     * combined server, or tests) decides how to fetch the values and passes them in here.
+     */
+    public static ConfigurableApplicationContext start(Map<String, String> environment) {
+        Env env = AuthServerEnvs.from(environment);
         configureCustomLoggerDirectory(env);
         logLocalDatabaseIfApplicable(env);
         SpringApplication application = new SpringApplication(ClippyAuthServerApplication.class);
-        application.run(args);
-    }
-
-    private static void applySpringSystemProperties(Env env) {
-        System.setProperty("server.port", env.get(AuthServerEnvs.AUTH_SERVER_PORT));
-        System.setProperty("spring.datasource.url", env.get(AuthServerEnvs.AUTH_DATASOURCE_URL));
-        System.setProperty("spring.datasource.username", env.get(AuthServerEnvs.AUTH_DATASOURCE_USERNAME));
-        System.setProperty("spring.datasource.password", env.get(AuthServerEnvs.AUTH_DATASOURCE_PASSWORD));
-        System.setProperty("logging.file.name", env.get(AuthServerEnvs.AUTH_LOGGING_FILE_NAME));
+        Map<String, Object> properties = AuthServerEnvs.springProperties(env);
+        application.setDefaultProperties(properties);
+        application.addInitializers(context -> context.getEnvironment().getPropertySources()
+                .addFirst(new MapPropertySource("clippyAuthServerLauncher", properties)));
+        return application.run();
     }
 
     private static void configureCustomLoggerDirectory(Env env) {

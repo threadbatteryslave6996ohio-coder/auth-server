@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -96,7 +95,7 @@ class AuthControllerTest {
         ClientIdentity identity = new ClientIdentity("client-a", credentialHasher.hashSecret("super-secret"), Instant.now());
         String token = "issued-token";
         String tokenHash = credentialHasher.hashToken(token);
-        when(tokens.findByTokenHash(anyString())).thenReturn(Optional.of(new ClientToken(identity, tokenHash, Instant.now())));
+        when(tokens.findWithIdentityByTokenHash(tokenHash)).thenReturn(Optional.of(new ClientToken(identity, tokenHash, Instant.now())));
 
         AuthController controller = new AuthController(identities, tokens, credentialHasher, tokenGenerator);
 
@@ -111,7 +110,7 @@ class AuthControllerTest {
         ClientIdentity identity = new ClientIdentity("client-a", credentialHasher.hashSecret("super-secret"), Instant.now());
         String token = "issued-token";
         String tokenHash = credentialHasher.hashToken(token);
-        when(tokens.findByTokenHash(anyString())).thenReturn(Optional.of(new ClientToken(identity, tokenHash, Instant.now())));
+        when(tokens.findWithIdentityByTokenHash(tokenHash)).thenReturn(Optional.of(new ClientToken(identity, tokenHash, Instant.now())));
 
         AuthController controller = new AuthController(identities, tokens, credentialHasher, tokenGenerator);
 
