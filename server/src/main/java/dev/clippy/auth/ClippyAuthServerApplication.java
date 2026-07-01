@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 
-import java.nio.file.Path;
 import java.util.Map;
 
 @SpringBootApplication
@@ -19,7 +18,7 @@ public class ClippyAuthServerApplication {
      */
     public static ConfigurableApplicationContext start(Map<String, String> environment) {
         Env env = AuthServerEnvs.from(environment);
-        configureCustomLoggerDirectory(env);
+        CustomLogger.configureDirectoryFromLogFile(env.get(AuthServerEnvs.AUTH_LOGGING_FILE_NAME));
         logLocalDatabaseIfApplicable(env);
         SpringApplication application = new SpringApplication(ClippyAuthServerApplication.class);
         Map<String, Object> properties = AuthServerEnvs.springProperties(env);
@@ -27,14 +26,6 @@ public class ClippyAuthServerApplication {
         application.addInitializers(context -> context.getEnvironment().getPropertySources()
                 .addFirst(new MapPropertySource("clippyAuthServerLauncher", properties)));
         return application.run();
-    }
-
-    private static void configureCustomLoggerDirectory(Env env) {
-        String loggingFileName = env.get(AuthServerEnvs.AUTH_LOGGING_FILE_NAME);
-        Path loggingPath = Path.of(loggingFileName == null ? "" : loggingFileName.trim());
-        Path parentDirectory = loggingPath.getParent();
-        String customLoggerDir = parentDirectory == null ? Path.of(".").toString() : parentDirectory.toString();
-        System.setProperty("custom.logger.dir", customLoggerDir);
     }
 
     private static void logLocalDatabaseIfApplicable(Env env) {
