@@ -1,5 +1,9 @@
 package dev.clippy.auth;
 
+import dev.clippy.auth.api.CheckTokenRequest;
+import dev.clippy.auth.api.CheckTokenResponse;
+import dev.clippy.auth.api.LoginRequest;
+import dev.clippy.auth.api.LoginResponse;
 import dev.clippy.utils.logger.CustomLogger;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;

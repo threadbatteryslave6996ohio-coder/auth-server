@@ -1,4 +1,4 @@
-package dev.clippy.auth;
+package dev.clippy.auth.api;
 
 public record LoginResponse(
         String clientId,

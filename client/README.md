@@ -5,10 +5,16 @@ Java wrapper for the Clippy auth server HTTP API.
 Use `ClippyAuthClient` when another Java module needs auth behavior without knowing endpoint paths or request/response DTO details.
 
 ```java
+import dev.clippy.auth.api.LoginResponse;
+import dev.clippy.auth.client.ClippyAuthClient;
+
 ClippyAuthClient authClient = new ClippyAuthClient("http://localhost:8081");
 LoginResponse login = authClient.login("dummy", "change-me-please");
 boolean valid = authClient.isTokenValidForClient("dummy", login.token());
 ```
+
+The shared request and response records are provided by the transitive
+`clippy-auth-api` dependency.
 
 ## Build
 

@@ -1,11 +1,10 @@
 package dev.clippy.auth;
 
-import dev.clippy.utils.logger.CustomLogger;
+import dev.clippy.bootstrap.SpringServerBootstrap;
 import dev.clippy.utils.envmanager.Env;
-import org.springframework.boot.SpringApplication;
+import dev.clippy.utils.logger.CustomLogger;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.MapPropertySource;
 
 import java.util.Map;
 
@@ -18,14 +17,12 @@ public class ClippyAuthServerApplication {
      */
     public static ConfigurableApplicationContext start(Map<String, String> environment) {
         Env env = AuthServerEnvs.from(environment);
-        CustomLogger.configureDirectoryFromLogFile(env.get(AuthServerEnvs.AUTH_LOGGING_FILE_NAME));
-        logLocalDatabaseIfApplicable(env);
-        SpringApplication application = new SpringApplication(ClippyAuthServerApplication.class);
-        Map<String, Object> properties = AuthServerEnvs.springProperties(env);
-        application.setDefaultProperties(properties);
-        application.addInitializers(context -> context.getEnvironment().getPropertySources()
-                .addFirst(new MapPropertySource("clippyAuthServerLauncher", properties)));
-        return application.run();
+        return SpringServerBootstrap.start(
+                ClippyAuthServerApplication.class,
+                env.get(AuthServerEnvs.AUTH_LOGGING_FILE_NAME),
+                () -> logLocalDatabaseIfApplicable(env),
+                AuthServerEnvs.springProperties(env),
+                "clippyAuthServerLauncher");
     }
 
     private static void logLocalDatabaseIfApplicable(Env env) {

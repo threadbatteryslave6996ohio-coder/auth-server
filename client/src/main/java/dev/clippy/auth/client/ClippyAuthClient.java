@@ -1,6 +1,10 @@
 package dev.clippy.auth.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.clippy.auth.api.CheckTokenRequest;
+import dev.clippy.auth.api.CheckTokenResponse;
+import dev.clippy.auth.api.LoginRequest;
+import dev.clippy.auth.api.LoginResponse;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.client.RestClient;
@@ -50,11 +54,5 @@ public final class ClippyAuthClient {
         } catch (RestClientException exception) {
             throw new AuthClientException("Cannot check token with auth server.", exception);
         }
-    }
-
-    private record LoginRequest(String clientId, String secret) {
-    }
-
-    private record CheckTokenRequest(String clientId, String token) {
     }
 }

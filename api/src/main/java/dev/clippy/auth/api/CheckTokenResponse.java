@@ -1,4 +1,4 @@
-package dev.clippy.auth.client;
+package dev.clippy.auth.api;
 
 public record CheckTokenResponse(
         boolean valid,

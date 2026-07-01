@@ -1,14 +1,15 @@
-package dev.clippy.auth;
+package dev.clippy.auth.api;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record CheckTokenRequest(
+public record LoginRequest(
         @NotBlank
         @Size(max = 128)
         String clientId,
 
         @NotBlank
-        String token
+        @Size(max = 256)
+        String secret
 ) {
 }
